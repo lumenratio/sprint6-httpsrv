@@ -37,11 +37,8 @@ func ChechStr(str string) (bool, error) {
 			result = false
 		}
 	}
-	if result {
-		return true, nil
-	} else {
-		return false, nil
-	}
+
+	return result, nil
 }
 
 func MorseConvert(strToConv string) (string, error) {
