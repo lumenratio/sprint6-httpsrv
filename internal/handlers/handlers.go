@@ -72,6 +72,13 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// send response with result string
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		if _, err := w.Write([]byte(resultStr)); err != nil {
+			log6.Err.Println("не удалось отправить ответ клиенту:", err.Error())
+		}
+
 		if _, err := fmt.Fprintln(result, resultStr); err != nil {
 			log6.Err.Println("ошибка при записи в итоговый файл", err.Error())
 			http.Error(w, "", http.StatusInternalServerError)
