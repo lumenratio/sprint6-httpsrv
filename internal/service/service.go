@@ -13,7 +13,7 @@ func ChechStr(str string) (bool, error) {
 	// split string to slices
 	ss := strings.Split(str, " ")
 	// regex for morse and string
-	regMorse := `^(.){1,5}|(-){1,5}$`
+	regMorse := `^[.-]{1,5}$`
 	regStr := `^\p{Cyrillic}|[0-9]$`
 	// setup regexp
 	rM := regexp.MustCompile(regMorse)
