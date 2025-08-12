@@ -13,8 +13,8 @@ func ChechStr(str string) (bool, error) {
 	// split string to slices
 	ss := strings.Split(str, " ")
 	// regex for morse and string
-	regMorse := `^(\.){1,5}|(-){1,5}$`
-	regStr := `^\p{Cyrillic}|[0-9]|(\.){1}`
+	regMorse := `^(.){1,5}|(-){1,5}$`
+	regStr := `^\p{Cyrillic}|[0-9]$`
 	// setup regexp
 	rM := regexp.MustCompile(regMorse)
 	rS := regexp.MustCompile(regStr)
@@ -53,9 +53,9 @@ func MorseConvert(strToConv string) (string, error) {
 	}
 
 	if result {
-		log6.Info.Println("Check done: this string is Morse code")
+		log6.Info.Println("Check done: this string is Morse code. Convert to String")
 		return morse.ToText(strToConv), nil
 	}
-	log6.Info.Println("Check done: this string is ordinary string")
+	log6.Info.Println("Check done: this string is ordinary string. Convert to Morse code")
 	return morse.ToMorse(strToConv), nil
 }
