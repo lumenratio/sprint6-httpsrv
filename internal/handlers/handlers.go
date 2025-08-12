@@ -50,7 +50,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	mfile, _, err := r.FormFile("myFile")
 	if err != nil {
 		log6.Err.Println("ошибка при получении файла", err.Error())
-		http.Error(w, "ошибка при получении файла", http.StatusInternalServerError)
+		http.Error(w, "ошибка при получении файла", http.StatusBadRequest)
 		return
 	}
 	defer mfile.Close()
