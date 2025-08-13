@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -14,29 +13,20 @@ import (
 )
 
 func GetRoot(w http.ResponseWriter, r *http.Request) {
-
-	fname := "index.html"
+	// проверку на наличие файла можно вынести в отдельную функцию/метод
+	/*fname := "index.html"
 	_, err := os.Stat(fname)
-	if err != nil && errors.Is(err, os.ErrNotExist) {
+	if err != nil && errors.Is(err, os.ErrNotExist) { // проверяем наличие файла
 		log6.Err.Println("index.html не найден:", err.Error())
 		http.Error(w, "index.html не найден", http.StatusInternalServerError)
 		return
-	}
+	}*/
 
-	var buff []byte
+	r.Header.Add("Content-Type", "text/html; charset=utf-8")
+	// для этого метода не нужно проверять наличие файла! Код выше, проверящий наличие файла - лишний.
+	// Функция вернет клиенту 404, если не найдет файл
+	http.ServeFile(w, r, "./index.html")
 
-	buff, err = os.ReadFile(fname)
-	if err != nil {
-		log6.Err.Println("не удалось прочитать index.html:", err.Error())
-		http.Error(w, "не удалось прочитать index.html", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	if _, err := w.Write(buff); err != nil {
-		log6.Err.Println("не удалось отправить ответ клиенту:", err.Error())
-	}
 }
 
 func Upload(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +45,8 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	defer mfile.Close()
 
-	result, err := os.Create(filepath.Join(time.Now().UTC().Format("2.1.2006-15:04:05") + filepath.Ext("file.txt")))
+	resultPath := filepath.Join(time.Now().UTC().Format("2.1.2006-15:04:05") + filepath.Ext("file.txt"))
+	result, err := os.Create(resultPath)
 	if err != nil {
 		log6.Err.Println("ошибка при создании файла", err.Error())
 		http.Error(w, "", http.StatusInternalServerError)
@@ -72,17 +63,14 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// send response with result string
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
-		if _, err := w.Write([]byte(resultStr)); err != nil {
-			log6.Err.Println("не удалось отправить ответ клиенту:", err.Error())
-		}
-
 		if _, err := fmt.Fprintln(result, resultStr); err != nil {
 			log6.Err.Println("ошибка при записи в итоговый файл", err.Error())
 			http.Error(w, "", http.StatusInternalServerError)
 			return
 		}
 	}
+	// send response with result string
+	r.Header.Add("Content-Type", "text/plain; charset=utf-8")
+	//w.WriteHeader(http.StatusOK)
+	http.ServeFile(w, r, "./"+resultPath)
 }
